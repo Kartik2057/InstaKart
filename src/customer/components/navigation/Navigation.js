@@ -1,6 +1,9 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Popover, Tab, Transition } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useNavigate } from 'react-router-dom'
+import { Avatar, Button, Menu, MenuItem } from '@mui/material'
+import { deepPurple } from '@mui/material/colors'
 
 const navigation = {
   categories: [
@@ -125,12 +128,38 @@ const navigation = {
   ],
 }
 
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Navigation() {
   const [open, setOpen] = useState(false)
+  const navigate = useNavigate();
+  const [openAuthModal, setOpenAuthModal] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openUserMenu = Boolean(anchorEl);
+
+  
+  const handleCategoryClick = (category, section, item, close) => {
+    navigate(`/${category.id}/${section.id}/${item.name}`);
+    close();
+  };
+
+  const handleOpen = () => {
+    setOpenAuthModal(true);
+  };
+  
+  const handleClose = () => {
+    setOpenAuthModal(false);
+  };
+
+  const handleUserClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseUserMenu = (event) => {
+    setAnchorEl(null);
+  };
 
   return (
     <div className="bg-white pb-10">
@@ -309,7 +338,7 @@ export default function Navigation() {
                 <div className="flex h-full space-x-8">
                   {navigation.categories.map((category) => (
                     <Popover key={category.name} className="flex">
-                      {({ open }) => (
+                      {({ open, close }) => (
                         <>
                           <div className="relative flex">
                             <Popover.Button
@@ -366,6 +395,8 @@ export default function Navigation() {
                                           <p id={`${section.name}-heading`} className="font-medium text-gray-900">
                                             {section.name}
                                           </p>
+
+                                           {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
                                           <ul
                                             role="list"
                                             aria-labelledby={`${section.name}-heading`}
@@ -373,9 +404,19 @@ export default function Navigation() {
                                           >
                                             {section.items.map((item) => (
                                               <li key={item.name} className="flex">
-                                                <a href={item.href} className="hover:text-gray-800">
+                                                <p
+                                                  onClick={() =>
+                                                    handleCategoryClick(
+                                                      category,
+                                                      section,
+                                                      item,
+                                                      close
+                                                    )
+                                                  }
+                                                  className="cursor-pointer hover:text-gray-800"
+                                                >
                                                   {item.name}
-                                                </a>
+                                                </p>
                                               </li>
                                             ))}
                                           </ul>
@@ -392,7 +433,7 @@ export default function Navigation() {
                     </Popover>
                   ))}
 
-                  {/* {navigation.pages.map((page) => (
+                  {navigation.pages.map((page) => (
                     <a
                       key={page.name}
                       href={page.href}
@@ -400,19 +441,46 @@ export default function Navigation() {
                     >
                       {page.name}
                     </a>
-                  ))} */}
+                  ))}
                 </div>
               </Popover.Group>
 
               <div className="ml-auto flex items-center">
-                <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  <a href="#" className="text-sm font-medium text-gray-700 hover:text-gray-800">
-                    Sign in
-                  </a>
-                  <span className="h-6 w-px bg-gray-200" aria-hidden="true" />
-                  <a href="#" className="text-sm font-medium text-gray-700 hover:text-gray-800">
-                    Create account
-                  </a>
+              <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+                    <div>
+                      <Avatar
+                        className="text-white"
+                        onClick={handleUserClick}
+                        aria-controls={open ? "basic-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                        sx={{
+                          bgcolor: deepPurple[500],
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                      >
+                        K
+                      </Avatar>
+                      <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={openUserMenu}
+                        onClose={handleCloseUserMenu}
+                        MenuListProps={{
+                          "aria-labelledby": "basic-button",
+                        }}
+                      >
+                        <MenuItem>
+                          Profile
+                        </MenuItem>
+                        
+                        <MenuItem onClick={()=>navigate("/account/order")}>
+                          My Orders
+                        </MenuItem>
+                        <MenuItem>Logout</MenuItem>
+                      </Menu>
+                    </div>
                 </div>
 
                 {/* <div className="hidden lg:ml-8 lg:flex">

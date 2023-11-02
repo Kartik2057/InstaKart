@@ -9,21 +9,16 @@ import CartPage from './customer/pages/CartPage';
 import CheckoutPage from './customer/pages/CheckoutPage';
 import OrdersPage from './customer/pages/OrdersPage';
 import OrderDetailPage from './customer/pages/OrderDetailPage';
+import { Route, Routes } from 'react-router-dom';
+import CustomerRoutes from './Routers/CustomerRoutes';
 
 function App() {
   return (
     <div className="">
-        <Navigation/>
-        <div>
-          {/* <Homepage/> */}
-          {/* <ProductPage/> */}
-          {/* <ProductDetailPage/> */}
-          {/* <CartPage/> */}
-          {/* <CheckoutPage/> */}
-          {/* <OrdersPage/> */}
-          <OrderDetailPage/>
-        </div>
-        {/* <Footer/> */}
+      <Routes>
+        <Route path='/*'  element={<CustomerRoutes/>}/>
+      </Routes>
+  
       </div>
   );
 }
