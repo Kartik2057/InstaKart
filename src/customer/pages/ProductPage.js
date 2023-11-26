@@ -1,16 +1,19 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import ProductCard from '../components/products/ProductCard';
-import { mens_kurta } from '../../data/Mens_Kurta';
 import { filters, singleFilter } from '../components/products/FilterData';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { findProducts } from '../../state/product/Action';
+import { store } from '../../state/Store';
+import { Pagination } from '@mui/material';
 
 const sortOptions = [
   { name: 'Price: Low to High', href: '#', current: false },
@@ -24,11 +27,20 @@ function classNames(...classes) {
 
 export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const [selectedRadioFilters, setSelectedRadioFilters] = useState({});
   const location=useLocation()
   const navigate=useNavigate();
+  const param=useParams();
+  const dispatch=useDispatch();
+  const {product} = useSelector((store)=>store);
 
   const handleFilter=(value,sectionId)=>{
     const searchParams = new URLSearchParams(location.search)
+    setSelectedFilters((prevFilters) => ({
+      ...prevFilters,
+      [sectionId]: { ...prevFilters[sectionId], [value]: !prevFilters[sectionId]?.[value] },
+    }));
 
     let filterValue=searchParams.getAll(sectionId)
 
@@ -49,13 +61,61 @@ export default function Product() {
     navigate({search:`?${query}`})
   }
 
+  const handlePaginationChange = (event, value)=>{
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("page",value);
+    const query = searchParams.toString();
+    console.log(searchParams," ",value);
+    navigate({search:`?${query}`});
+  }
+
+  const decodedQueryString=decodeURIComponent(location.search);
+  const searchParams = new URLSearchParams(decodedQueryString);
+  const colorValue = searchParams.get("color");
+  const sizeValue = searchParams.get("size");
+  const priceValue = searchParams.get("price");
+  const discount = searchParams.get("discount");
+  const sortValue = searchParams.get("sort");
+  const pageNumber = searchParams.get("page") || 0;
+  const stock = searchParams.get("stock");
+
   const handleRadioFilterChange=(e,sectionId)=>{
     const searchParams = new URLSearchParams(location.search)
-
+    setSelectedRadioFilters((prevFilters) => ({
+      ...prevFilters,
+      [sectionId]: e.target.value,
+    }));
     searchParams.set(sectionId,e.target.value)
     const query = searchParams.toString();
     navigate({search:`?${query}`})
   }
+
+  useEffect(()=>{
+    const [minPrice, maxPrice] = priceValue===null?[0,10000]:priceValue.split("-").map(Number);
+
+    const data ={
+      category:param.levelThree,
+      colors:colorValue || [],
+      sizes:sizeValue || [],
+      minPrice,
+      maxPrice,
+      minDiscount:discount||0,
+      sort:sortValue || "price_low",
+      pageNumber:pageNumber,
+      pageSize:1,
+      stock:stock
+    }
+    dispatch(findProducts(data));
+  },[
+    param.levelThree,
+    colorValue,
+    sizeValue,
+    priceValue,
+    discount,
+    sortValue,
+    pageNumber,
+    stock
+  ])
 
   return (
     <div className="bg-white">
@@ -291,9 +351,9 @@ export default function Product() {
                                     onChange={()=>handleFilter(option.value,section.id)}
                                     id={`filter-${section.id}-${optionIdx}`}
                                     name={`${section.id}[]`}
-                                    defaultValue={option.value}
+                                    value={option.value}
                                     type="checkbox"
-                                    defaultChecked={option.checked}
+                                    checked={selectedFilters[section.id]?.[option.value]}
                                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                   />
                                   <label
@@ -337,6 +397,7 @@ export default function Product() {
                                 {section.options.map((option, optionIdx) => (
                                   <FormControlLabel
                                     value={option.value}
+                                    checked={selectedRadioFilters[section.id] === option.value}
                                     control={<Radio />}
                                     label={option.label}
                                     onChange={(e)=>handleRadioFilterChange(e,section.id)}
@@ -355,9 +416,18 @@ export default function Product() {
               {/* Product grid */}
               <div className="lg:col-span-4 w-full">
                 <div className='flex flex-wrap justify-center bg-white py-5 rounded-md'>
-                  {mens_kurta.map((item) => <ProductCard product={item} />)}
+                  {product.products && product.products.content?.map((item) => 
+                  <ProductCard product={item} />)}
                 </div>
               </div>
+            </div>
+          </section>
+          <section className='w-full px=[3.6rem]'>
+            <div className='px-4 py-5 flex justify-center'>
+               <Pagination 
+               count={product.products?.totalPages} 
+               color='secondary' 
+               onChange={handlePaginationChange}/>
             </div>
           </section>
         </main>
