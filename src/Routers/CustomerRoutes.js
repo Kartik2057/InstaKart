@@ -11,7 +11,7 @@ import OrdersPage from '../customer/pages/OrdersPage'
 import OrderDetailPage from '../customer/pages/OrderDetailPage'
 import PaymentSuccess from '../customer/components/payment/PaymentSuccess'
 
-const CustomerRoutes = () => {
+export const CustomerRoutes = () => {
   return (
     <div>
       <div>
@@ -34,4 +34,4 @@ const CustomerRoutes = () => {
   )
 }
 
-export default CustomerRoutes
+// export default CustomerRoutes
