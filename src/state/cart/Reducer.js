@@ -62,18 +62,14 @@ import {
       case REMOVE_CART_ITEM_SUCCESS:
         return {
           ...state,
-          cartItems: state.cartItems.filter(
-            (item) => item.id !== action.payload
-          ),
+          deleteCartItem: action.payload,
           loading: false,
           error:null
         };
       case UPDATE_CART_ITEM_SUCCESS:
         return {
           ...state,
-          cartItems: state.cartItems.map((item) =>
-            item.id === action.payload.id ? action.payload : item
-          ),
+          updateCartItem: action.payload,
           loading: false,
           error:null
         };

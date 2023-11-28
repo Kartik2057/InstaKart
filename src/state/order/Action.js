@@ -9,20 +9,20 @@ import {
   GET_ORDER_HISTORY_REQUEST,
   GET_ORDER_HISTORY_SUCCESS,
 } from "./ActionType";
-import api from "../../../config/api";
+import {api} from "../../config/apiConfig";
 
 export const createOrder = (reqData) => async (dispatch) => {
   console.log("req data ", reqData);
   dispatch({ type: CREATE_ORDER_REQUEST });
   try {
     const { data } = await api.post(
-      `/api/orders/`,
+      `/api/orders`,
       reqData.address
     );
     if (data.id) {
       reqData.navigate({ search: `step=3&order_id=${data.id}` });
     }
-    console.log("created order - ", data);
+    // console.log("created order - ", data);
     dispatch({
       type: CREATE_ORDER_SUCCESS,
       payload: data,
@@ -37,7 +37,7 @@ export const createOrder = (reqData) => async (dispatch) => {
 };
 
 export const getOrderById = (orderId) => async (dispatch) => {
-  console.log("get order req ", orderId);
+  // console.log("get order req ", orderId);
   dispatch({ type: GET_ORDER_BY_ID_REQUEST });
   try {
 

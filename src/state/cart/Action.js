@@ -1,7 +1,5 @@
-import {axios} from "../../config/apiConfig"
+import {api} from "../../config/apiConfig"
 
-
-import { API_BASE_URL } from "../../../config/api";
 import {
     ADD_ITEM_TO_CART_REQUEST,
     ADD_ITEM_TO_CART_SUCCESS,
@@ -18,21 +16,11 @@ import {
 } from "./ActionType";
 
 export const addItemToCart = (reqData) => async (dispatch) => {
-    console.log("req data ",reqData)
   try {
-   
     dispatch({ type: ADD_ITEM_TO_CART_REQUEST });
-    const config = {
-      headers: {
-        Authorization: `Bearer ${reqData.jwt}`,
-        "Content-Type": "application/json",
-      },
-    };
-    const { data } = await axios.put(`/api/cart/add`, 
-      reqData.data,
-      config,
+    const { data } = await api.put(`/api/cart/add`, 
+      reqData
     );
-    // console.log("add item to cart ",data)
     dispatch({
       type: ADD_ITEM_TO_CART_SUCCESS,
       payload: data,
@@ -46,17 +34,11 @@ export const addItemToCart = (reqData) => async (dispatch) => {
 };
 
 
-export const getCart = (jwt) => async (dispatch) => {
+export const getCart = () => async (dispatch) => {
   try {
     dispatch({ type: GET_CART_REQUEST });
-    const config = {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-          "Content-Type":"application/json"
-        },
-      };
-    const { data } = await axios.get(`/api/cart/`);
-console.log("cart ",data)
+    const { data } = await api.get(`/api/cart`);
+    // console.log("cart ",data)
     dispatch({
       type: GET_CART_SUCCESS,
       payload: data,
@@ -69,20 +51,14 @@ console.log("cart ",data)
   }
 };
 
-export const removeCartItem = (reqData) => async (dispatch) => {
+export const removeCartItem = (cartItemId) => async (dispatch) => {
     try {
       dispatch({ type: REMOVE_CART_ITEM_REQUEST });
-      const config = {
-        headers: {
-          Authorization: `Bearer ${reqData.jwt}`,
-          "Content-Type":"application/json"
-        },
-      };
-      await axios.delete(`/api/cart_items/${reqData.cartItemId}`);
-  
+      await api.delete(`/api/cart_items/${cartItemId}`);
+      console.log("removed cartItem", cartItemId);
       dispatch({
         type: REMOVE_CART_ITEM_SUCCESS,
-        payload: reqData.cartItemId,
+        payload: cartItemId,
       });
     } catch (error) {
       dispatch({
@@ -92,20 +68,14 @@ export const removeCartItem = (reqData) => async (dispatch) => {
     }
   };
   
-  export const updateCartItem = (reqData) => async (dispatch) => {
+export const updateCartItem = (reqData) => async (dispatch) => {
     try {
       dispatch({ type: UPDATE_CART_ITEM_REQUEST });
-      const config = {
-        headers: {
-          Authorization: `Bearer ${reqData.jwt}`,
-          "Content-Type":"application/json"
-        },
-      };
-      const { data } = await axios.put(
+      const { data } = await api.put(
         `/api/cart_items/${reqData.cartItemId}`,
         reqData.data
       );
-  console.log("updated cartitem ",data)
+      // console.log("updated cartitem ",data)
       dispatch({
         type: UPDATE_CART_ITEM_SUCCESS,
         payload: data,
