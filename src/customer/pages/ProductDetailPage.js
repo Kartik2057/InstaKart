@@ -3,7 +3,7 @@ import { RadioGroup } from '@headlessui/react'
 import { Rating, Button, Grid, LinearProgress, Box } from '@mui/material'
 import ProductReviewCard from '../components/products/ProductReviewCard'
 import HomeSectionCard from '../components/home/HomeSectionCard'
-import { mens_kurta } from '../../data/Mens_Kurta';
+import { mens_kurta } from '../../tempdata/Mens_Kurta';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { findProductsById } from '../../state/product/Action'
