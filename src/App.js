@@ -1,6 +1,6 @@
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
-import {CustomerRoutes} from './routers/CustomerRoutes';
+import {CustomerRoutes} from './route/CustomerRoutes';
 
 function App() {
   return (
