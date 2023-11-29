@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# Tailored-Clothing
 
-This project was deployed on vercel you can access from here [Tailored-Clothing](https://tailored-clothing.vercel.app/).
+This project was deployed on vercel you can access it from here [Tailored-Clothing](https://tailored-clothing.vercel.app/).
 
 ## Available Scripts
 
